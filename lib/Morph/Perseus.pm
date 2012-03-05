@@ -1,26 +1,52 @@
 use utf8;
 package Morph::Perseus;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 use strict;
 use warnings;
+use feature 'say';
+use Moose;
+use Unicode::Normalize;
 
-use base 'DBIx::Class::Schema';
+extends 'DBIx::Class::Schema';
+
+has 'language' => (
+	'is' => 'ro',
+	'isa' => 'Str',
+	'predicate' => 'has_language',
+	'writer' => '_set_language',
+	);
+
+# Figure out which language we're using.
+
+around connection => sub {
+	my $orig = shift;
+	my $self = shift;
+	my $lang = delete $_[3]->{'morph_language'};
+	if( $lang ) {
+		$self->_set_language( $lang );
+	} elsif( $_[0] =~ /greek/i ) {
+		$self->_set_language('Greek');
+	} elsif( $_[0] =~ /latin/i ) {
+		$self->_set_language('Latin');
+	}
+	die "Need to specify a language somehow" unless $self->has_language;
+	
+	# Replace the alt_lsj column with the language-appropriate one
+	if( $self->language eq 'Latin' ) {
+		my $colinfo = $self->source('Lexicon')->column_info('alt_lsj');
+		$self->source('Lexicon')->remove_column('alt_lsj');
+		$self->source('Lexicon')->add_column('alt_ls' => $colinfo );
+	}
+
+	# Make the connection.
+	$self->$orig( @_ );
+};
 
 __PACKAGE__->load_namespaces;
 
-
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5JARAJ0Q1HF133dJ5FGPaQ
-
-use feature 'say';
-use Encode qw/ decode_utf8 /;
-use Unicode::Normalize;
-
 sub lookup {
 	my( $self, $word ) = @_;
+	return {} unless $word;
 	$word = NFC( $word );
 	# Convert to curly quotes where possible
 	$word =~ s/^['\x{1fbd}]/\x{2018}/;
@@ -30,9 +56,13 @@ sub lookup {
 	my @results = $self->_straight_match( $word );
 	@results = $self->_lc_match( $word ) unless @results;
 	@results = $self->_name_match( $word ) unless @results;
+	my $fuzzymatch_sub = $self->language eq 'Latin' 
+		? '_latinfold_match' : '_accentless_match';
 	unless( @results ) {
-		$is_exact = 0;
-		@results = $self->_accentless_match( $word );
+		# Latin fuzzy matching is orthographic-only, so 
+		# a hit is still an exact match.
+		$is_exact = 0 unless $self->language eq 'Latin';
+		@results = $self->$fuzzymatch_sub( $word );
 	}
 	return( { 'exact_match' => $is_exact, 'objects' => \@results } );
 }
@@ -71,6 +101,9 @@ sub _accentless_match {
 			}
 		}
 	}
+	# Don't bother unless our search pattern actually changed
+	return () if join( '', @token ) eq $word;
+	
 	my $rs = $self->resultset('Lexicon')->search({ 
 		'token' => { -like => join( '', @token ) } });
 	my @resultset;
@@ -88,6 +121,44 @@ sub _accentless_match {
 		}
 	}
 	return @resultset;
+}
+
+sub _latinfold_match {
+	my( $self, $word ) = @_;
+	my $token = _latin_sqlregex( $word );
+	my $matchstr = _normalize_latin( $word );
+
+	# Don't bother unless our search pattern actually changed
+	return () if $token eq $word; 
+	
+	my $rs = $self->resultset('Lexicon')->search({ 'token' => { -like => $token } });
+	my @resultset;
+	if( $rs->count ) {
+		while( my $match = $rs->next ) {
+			my $rmatch = _normalize_latin( $match->token );
+			next unless $rmatch eq $matchstr;
+			push( @resultset, $match );
+		}
+	}
+	return @resultset;
+}
+
+sub _normalize_latin {
+	my $word = shift;
+	$word = lc( $word );
+	$word =~ s/cha/ca/g;
+	$word =~ s/j/i/g;
+	$word =~ s/v/u/g;
+	return $word;
+}
+
+sub _latin_sqlregex {
+	my $word = shift;
+	$DB::single = 1 unless $word;
+	$word = lc( $word );
+	$word =~ s/c(h)?a/%a/g;
+	$word =~ s/[ijuv]/_/g;
+	return $word;
 }
 
 1;
