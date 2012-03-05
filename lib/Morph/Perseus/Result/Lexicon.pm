@@ -44,13 +44,6 @@ __PACKAGE__->table("Lexicon");
   data_type: 'text'
   is_nullable: 1
 
-=head2 alt_lsj
-
-  data_type: 'varchar'
-  default_value: null
-  is_nullable: 1
-  size: 64
-
 =head2 note
 
   data_type: 'varchar'
@@ -69,13 +62,6 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "lemma",
   { data_type => "text", is_nullable => 1 },
-  "alt_lsj",
-  {
-    data_type => "varchar",
-    default_value => \"null",
-    is_nullable => 1,
-    size => 64,
-  },
   "note",
   {
     data_type => "varchar",
