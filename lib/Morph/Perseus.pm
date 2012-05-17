@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use feature 'say';
 use Moose;
+use Morph::Perseus::Structure;
 use Unicode::Normalize;
 
 extends 'DBIx::Class::Schema';
@@ -21,15 +22,29 @@ has 'language' => (
 around connection => sub {
 	my $orig = shift;
 	my $self = shift;
-	my $lang = delete $_[3]->{'morph_language'};
-	if( $lang ) {
-		$self->_set_language( $lang );
-	} elsif( $_[0] =~ /greek/i ) {
-		$self->_set_language('Greek');
-	} elsif( $_[0] =~ /latin/i ) {
-		$self->_set_language('Latin');
+	my @args = @_;
+	
+	# Are we working with defaults?
+	if( @_ == 1 && $_[0] !~ /dbname/ ) {
+		# Set the language
+		$self->_set_language( @_ );		
+		# Get the default database
+		my $dbdir = $INC{'Morph/Perseus.pm'};
+		$dbdir =~ s/Perseus.pm$/db/;
+		@args = ( sprintf( "dbi:SQLite:dbname=%s/%s.db", 
+			$dbdir, lc( $self->language ) ) );
+	} else {
+		# We have a database specified; make sure we have a language too.
+		my $lang = delete $_[3]->{'morph_language'};
+		if( $lang ) {
+			$self->_set_language( $lang );
+		} elsif( $_[0] =~ /greek/i ) {
+			$self->_set_language('Greek');
+		} elsif( $_[0] =~ /latin/i ) {
+			$self->_set_language('Latin');
+		}
+		die "Need to specify a language somehow" unless $self->has_language;
 	}
-	die "Need to specify a language somehow" unless $self->has_language;
 	
 	# Replace the alt_lsj column with the language-appropriate one
 	if( $self->language eq 'Latin' ) {
@@ -37,9 +52,9 @@ around connection => sub {
 		$self->source('Lexicon')->remove_column('alt_lsj');
 		$self->source('Lexicon')->add_column('alt_ls' => $colinfo );
 	}
-
+	
 	# Make the connection.
-	$self->$orig( @_ );
+	$self->$orig( @args );
 };
 
 __PACKAGE__->load_namespaces;
@@ -154,7 +169,6 @@ sub _normalize_latin {
 
 sub _latin_sqlregex {
 	my $word = shift;
-	$DB::single = 1 unless $word;
 	$word = lc( $word );
 	$word =~ s/c(h)?a/%a/g;
 	$word =~ s/[ijuv]/_/g;
