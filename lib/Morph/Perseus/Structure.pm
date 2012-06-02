@@ -23,7 +23,8 @@ Lingua::Features::FeatureType->_new(
         int  => 'interrogative',
         rel  => 'relative',
         mod  => 'modal',
-        proper => 'proper'
+        proper => 'proper',
+        ref  => 'reflexive',
     }
 );
 # pers is defined
@@ -154,6 +155,7 @@ Lingua::Features::StructureType->_new(
 	id		 => 'conj',
 );
 # preposition needs no redefinition
+# interjection needs no redefinition
 Lingua::Features::StructureType->_new(
 	id		 => 'particle',
 );
@@ -163,17 +165,20 @@ Lingua::Features::StructureType->_new(
 my %categories = (
 	v => 'verb',
 	n => 'noun',
+	'm' => 'adj', # really 'number'
 	a => 'adj',
 	p => 'pron',
 	d => 'adv',
 	c => 'conj',
 	r => 'prep',
-	g => 'particle'
+	g => 'particle',
+	i => 'interj',
+	e => 'interj'
 	);
 my @tag_fields = (
 	{ 'id' => 'type',
 	  'val' => { 'd' => 'dem', 'm' => 'modal', 's' => 'poss', 'i' => 'int',
-        'r' => 'rel', 'e' => 'proper' }
+        'r' => 'rel', 'e' => 'proper', 'k' => 'ref', 'x' => 'rel', 'p' => 'pers' }
     },
 	{ 'id' => 'pers',
 	  'val' => { '1' => '1', '2' => '2', '3' => '3' }
@@ -193,7 +198,7 @@ my @tag_fields = (
 	  'val' => { 'a' => 'act', 'p' => 'pass' }
     },
 	{ 'id' => 'gender',
-	  'val' => { 'm' => 'masc', 'f' => 'fem', 'n' => 'neut' }
+	  'val' => { 'm' => 'masc', 'f' => 'fem', 'n' => 'neut', 'c' => 'neut' }
     },
 	{ 'id' => 'case',
 	  'val' => { 'a' => 'acc', 'd' => 'dat', 'g' => 'gen', 'n' => 'nom', 
@@ -203,6 +208,10 @@ my @tag_fields = (
 	  'val' => { 'c' => 'comp', 's' => 'sup' }
     }
 );
+
+## TODO check gender 'c', type 'k x p', cat 'e i'
+## TODO check esuriet -> exsurio but esurio -> esurio
+## TODO check evolvo / exvolvo
 
 sub from_tag {
 	my( $class, $tag ) = @_;
@@ -214,13 +223,13 @@ sub from_tag {
 		my $tfs = $tag_fields[$i];
 		die "No known field at index $i" unless $tfs;
 		# Special case the determinative
-		if( $tfs->{'id'} eq 'type' && $bits[$i] eq 'a' ) {
+		if( $tfs->{'id'} eq 'type' && $bits[$i] eq 'a' && $cb eq 'p' ) {
 			$features{'cat'} = 'det';
 		} else {
 			my $fname = $tfs->{'id'};
 			my $fval = exists $tfs->{'val'}->{$bits[$i]}
 				? $tfs->{'val'}->{$bits[$i]} : undef;
-			die "No definition for " . $bits[$i] . " for feature $fname"
+			die "$tag: No definition for " . $bits[$i] . " for feature $fname"
 				unless $fname && $fval;
 			$features{$fname} = $fval;
 		}
