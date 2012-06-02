@@ -71,6 +71,7 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "alt_lsj",
   {
+    accessor => "alt_lex",
     data_type => "varchar",
     default_value => \"null",
     is_nullable => 1,

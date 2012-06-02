@@ -48,9 +48,11 @@ around connection => sub {
 	
 	# Replace the alt_lsj column with the language-appropriate one
 	if( $self->language eq 'Latin' ) {
+		#print STDERR "Setting up Latin column\n";
 		my $colinfo = $self->source('Lexicon')->column_info('alt_lsj');
-		$self->source('Lexicon')->remove_column('alt_lsj');
-		$self->source('Lexicon')->add_column('alt_ls' => $colinfo );
+		my $noteinfo = $self->source('Lexicon')->column_info('note');
+		$self->source('Lexicon')->remove_columns('alt_lsj', 'note');
+		$self->source('Lexicon')->add_columns('alt_ls' => $colinfo, 'note' => $noteinfo );
 	}
 	
 	# Make the connection.
