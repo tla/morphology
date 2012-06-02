@@ -1,12 +1,12 @@
 use utf8;
-package Morph::Perseus::Result::Lexicon;
+package Lingua::Morph::Perseus::Result::Lexicon;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-Morph::Perseus::Result::Lexicon
+Lingua::Morph::Perseus::Result::Lexicon
 
 =cut
 

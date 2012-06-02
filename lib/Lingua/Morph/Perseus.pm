@@ -1,11 +1,11 @@
 use utf8;
-package Morph::Perseus;
+package Lingua::Morph::Perseus;
 
 use strict;
 use warnings;
 use feature 'say';
 use Moose;
-use Morph::Perseus::Structure;
+use Lingua::Morph::Perseus::Structure;
 use Unicode::Normalize;
 
 extends 'DBIx::Class::Schema';

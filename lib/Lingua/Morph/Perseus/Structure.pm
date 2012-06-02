@@ -1,8 +1,8 @@
-package Morph::Perseus::Structure;
+package Lingua::Morph::Perseus::Structure;
 
 =head1 NAME
 
-Morph::Perseus::Structure - a Lingua::Features::Structure object for Perseus results
+Lingua::Morph::Perseus::Structure - a Lingua::Features::Structure object for Perseus results
 
 =cut
 
