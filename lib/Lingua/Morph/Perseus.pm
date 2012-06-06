@@ -5,8 +5,12 @@ use strict;
 use warnings;
 use feature 'say';
 use Moose;
-use Lingua::Morph::Perseus::Structure;
+use Lingua::TagSet::Perseus;
+use Module::Load;
+use TryCatch;
 use Unicode::Normalize;
+
+our $VERSION = '1.0';
 
 extends 'DBIx::Class::Schema';
 
@@ -23,16 +27,15 @@ around connection => sub {
 	my $orig = shift;
 	my $self = shift;
 	my @args = @_;
-	
 	# Are we working with defaults?
 	if( @_ == 1 && $_[0] !~ /dbname/ ) {
 		# Set the language
 		$self->_set_language( @_ );		
 		# Get the default database
-		my $dbdir = $INC{'Morph/Perseus.pm'};
+		my $dbdir = $INC{'Lingua/Morph/Perseus.pm'};
 		$dbdir =~ s/Perseus.pm$/db/;
 		@args = ( sprintf( "dbi:SQLite:dbname=%s/%s.db", 
-			$dbdir, lc( $self->language ) ) );
+			$dbdir, lc( $self->language ) ), undef, undef, { 'sqlite_unicode' => 1 } );
 	} else {
 		# We have a database specified; make sure we have a language too.
 		my $lang = delete $_[3]->{'morph_language'};
@@ -61,13 +64,44 @@ around connection => sub {
 
 __PACKAGE__->load_namespaces;
 
-sub lookup {
-	my( $self, $word ) = @_;
+=head2 lexicon_lookup( $word, $opts )
+
+Return rows from the Lexicon database for the given $word.  Substitute a Lingua::Features::Structure object for the code in the database row.
+
+Options that can be passed in the $opts hash include:
+
+=over 4
+
+=item lemma - Filter results to match the supplied lemma
+
+=item ttpos - Filter results to match the supplied TreeTagger POS
+
+=item strict - Return an empty set if nothing matches the filters. The method will
+otherwise return unfiltered results if no filter match worked.
+
+=cut
+
+sub lexicon_lookup {
+	my( $self, $word, $opts ) = @_;
 	return {} unless $word;
 	$word = NFC( $word );
 	# Convert to curly quotes where possible
 	$word =~ s/^['\x{1fbd}]/\x{2018}/;
 	$word =~ s/['\x{1fbd}]$/\x{2019}/;
+	
+	# If we have a TreeTagger tag, use it.
+	my $ttstruct;
+	if( exists $opts->{'ttpos'} ) {
+		my $treetag = $opts->{'ttpos'};
+		try {
+			my $mod = 'Lingua::TagSet::TreeTagger::' . $self->language;
+			load( $mod );
+			$ttstruct = $mod->tag2structure( $treetag );
+		} catch {
+			warn "Could not parse passed TT tag $treetag";
+		}
+	}
+	my $lemma = $opts->{'lemma'};
 
 	my $is_exact = 1;
 	my @results = $self->_straight_match( $word );
@@ -81,7 +115,33 @@ sub lookup {
 		$is_exact = 0 unless $self->language eq 'Latin';
 		@results = $self->$fuzzymatch_sub( $word );
 	}
-	return( { 'exact_match' => $is_exact, 'objects' => \@results } );
+	
+	# Filter if we were asked to
+	my $filtered = '';
+	if( $lemma && @$lemma ) {
+		my @lfiltered = grep { _in( $_->lemma, $lemma ) } @results;
+		if( $opts->{'strict'} || @lfiltered ) {
+			@results = @lfiltered;
+			$filtered = 'lemma';
+		}
+	}
+	if( $ttstruct ) {
+		my @tfiltered = grep { $ttstruct->is_compatible( $_->morphology ) } @results;
+		if( $opts->{'strict'} || @tfiltered ) {
+			@results = @tfiltered;
+			$filtered .= 'ttpos';
+		}
+	}
+	return( {
+		objects     => \@results,
+		exact_match => $is_exact,
+		filtered    => $filtered
+	} );
+}
+
+sub _in {
+	my( $item, $list ) = @_;
+	return grep { $_ eq $item } @$list;
 }
 
 sub _straight_match {

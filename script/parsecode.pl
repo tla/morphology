@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
 
 use lib 'lib';
+use feature 'say';
 use strict;
 use warnings;
-use Morph::Perseus::Structure;
+use Lingua::TagSet::Perseus;
 
-my $s = Morph::Perseus::Structure->from_tag( @ARGV );
-print $s->to_string;
+my $s = Lingua::TagSet::Perseus->tag2structure( @ARGV );
+say $s->to_string;
+say "reconverted: " . Lingua::TagSet::Perseus->structure2tag( $s );

@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
+use Lingua::TagSet::Perseus;
 
 =head1 TABLE: C<Lexicon>
 
@@ -102,6 +103,27 @@ __PACKAGE__->set_primary_key("lexid");
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LyJ2Z14Gzc/Fll067+b6Pg
 
+=head1 METHODS
+
+=head2 morphology
+
+Converts the string in $self->code to a Lingua::Features::Structure object
+and returns the object.
+
+=cut
+
+sub morphology {
+	my $self = shift;
+	
+	# We're trying to read, not write. Get the string and convert it to a Structure.
+	my $str = $self->code;
+	my $struct;
+	if( $str ) {
+		# This will croak if $str is not a valid tag
+		$struct = Lingua::TagSet::Perseus->tag2structure( $str );
+	};
+	return $struct;	
+}
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
