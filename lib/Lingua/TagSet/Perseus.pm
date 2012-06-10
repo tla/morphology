@@ -39,8 +39,8 @@ our @id_maps = (
 		]
 	},
 	{ 
-		features => { cat => 'noun' },
-		tokens => [ 'm' ],
+		features => { cat => 'adj', type => [ 'card', 'ord' ] },
+		tokens => [ 'm', undef, undef, undef, undef, undef, undef, undef, undef, undef ],
 		submap => [
 			1 => 'type',
 			3 => 'num',
@@ -89,8 +89,15 @@ our @id_maps = (
 		]
 	},
 	{
+		features => { cat => 'abr' },
+		tokens => [ 'y' ],
+	},
+	{
 		features => { cat => 'conj' },
 		tokens => [ 'c' ],
+		submap => [
+			1 => 'type'
+		]
 	},
 	{
 		features => { cat => 'prep' },
@@ -105,7 +112,7 @@ our @id_maps = (
 		tokens => [ 'i' ],
 	},
 	{
-		features => { cat => 'interj' },
+		features => { cat => [ 'interj' ] },
 		tokens => [ 'e' ],
 	},
 );
@@ -118,10 +125,13 @@ my $typecodes = [
 	's' => 'poss', 
 	'i' => 'int',
 	'r' => 'rel', 
-	'e' => 'prop', 
+	'e' => 'proper', 
 	'k' => 'refl', 
 	'x' => 'ind', 
-	'p' => 'pers'
+	'p' => 'pers',
+	'o' => 'co',
+	'u' => 'sub',
+	'a' => 'adv'
 ];
 
 our %value_maps = (
@@ -130,6 +140,7 @@ our %value_maps = (
 	adj  => $typecodes,
 	pron => $typecodes,
 	adv  => $typecodes,
+	conj => $typecodes,
     pers => [
     	'1' => '1', 
     	'2' => '2', 

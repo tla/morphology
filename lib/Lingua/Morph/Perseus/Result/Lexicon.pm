@@ -103,6 +103,15 @@ __PACKAGE__->set_primary_key("lexid");
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LyJ2Z14Gzc/Fll067+b6Pg
 
+=head1 JOINS
+
+=head2 lemma -> shortdefs.lemma
+
+=cut
+
+__PACKAGE__->belongs_to( 'shortdefs', 'Lingua::Morph::Perseus::Result::Shortdef', 'lemma' );
+__PACKAGE__->has_many( 'parses', 'Lingua::Morph::Perseus::Result::Parse', 'lex' );
+
 =head1 METHODS
 
 =head2 morphology

@@ -101,6 +101,12 @@ __PACKAGE__->set_primary_key("parseid");
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9GUfqkHk3KZRamdkDC0lrQ
 
+=head1 JOINS
+
+=cut
+
+__PACKAGE__->belongs_to( 'tokens', 'Lingua::Morph::Perseus::Result::Token', 'tokenid' );
+__PACKAGE__->belongs_to( 'lexicon', 'Lingua::Morph::Perseus::Result::Lexicon', 'lex' );
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

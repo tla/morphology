@@ -80,6 +80,8 @@ __PACKAGE__->set_primary_key("tokenid");
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AcFIW3B8ETVMtWMIOTyOuw
 
+__PACKAGE__->has_many( 'parses', 'Lingua::Morph::Perseus::Result::Parse', 'tokenid' );
+
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

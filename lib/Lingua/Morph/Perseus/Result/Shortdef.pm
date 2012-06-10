@@ -46,6 +46,8 @@ __PACKAGE__->add_columns(
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-04 21:54:20
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:S4kDGyBO8Tl7WXZsG1ClEQ
 
+__PACKAGE__->set_primary_key("lemma");
+__PACKAGE__->has_many( 'lemma', 'Lingua::Morph::Perseus::Result::Lexicon', 'lemma' );
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
