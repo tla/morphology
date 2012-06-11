@@ -32,9 +32,10 @@ my @rows = <ATF>;
 close ATF;
 chomp @rows;
 foreach my $cst ( @rows ) {
+	$cst =~ s/\s+$//;
 	my $struct = Lingua::TagSet::Perseus::Armenian->tag2structure( $cst );
 	ok( $struct, "Got structure for $cst: " 
 		. ( $struct ? $struct->to_string : '' ) );
-	# my $code = Lingua::TagSet::Perseus::Armenian->structure2tag( $struct );
-	# is( $code, $cst, "Code $cst reconverted to itself" );
+	# Reconversion of codes doesn't work properly in all cases
+	# TODO List expected tags for codes in the test file
 }

@@ -14,70 +14,67 @@ use Lingua::Features::Structure;
 our @id_maps = (
 	{
 		features => { cat => 'verb' },
-		tokens => [ 'verb' ],
+		tokens => [ 'verb', undef ],
 		submap => [
-			1 => 'pers',
-			2 => 'num',
-			3 => 'tense',
-			4 => 'mode',
-			5 => 'voice',
+			2 => 'pers',
+			3 => 'num',
+			4 => 'tense',
+			5 => 'mode',
+			6 => 'voice',
 		]
 	},
 	{
 		features => { cat => 'verb', mode => 'part' },
 		tokens => [ 'verb', 'part' ],
 		submap => [
-			1 => 'num',
 			2 => 'case',
+			3 => 'num',
 		]
 	},
 	{
 		features => { cat => 'verb', mode => 'inf' },
 		tokens => [ 'verb', 'inf' ],
 		submap => [
-			1 => 'pers',
-			2 => 'num',
-			3 => 'tense',
-			4 => 'mode',
-			5 => 'voice',
+			2 => 'case',
+			3 => 'num',
 		]
 	},
 	{
 		features => { cat => 'noun' },
 		tokens => [ 'noun' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'noun', type => 'proper' },
 		tokens => [ 'name' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'num', type => 'card' },
 		tokens => [ 'numc' ],
 		submap => [
-			2 => 'case',
+			1 => 'case',
 		]
 	},		
 	{
 		features => { cat => 'num', type => 'ord' },
 		tokens => [ 'numo' ],
 		submap => [
-			2 => 'case',
+			1 => 'case',
 		]
 	},		
 	{ 
 		features => { cat => 'adj' },
 		tokens => [ 'adj' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{ 
@@ -91,32 +88,32 @@ our @id_maps = (
 		features => { cat => 'pron', type => 'dem' },
 		tokens => [ 'pdem' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'id' },
 		tokens => [ 'pide' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'ind' },
 		tokens => [ 'pind' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'int' },
 		tokens => [ 'prog' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
@@ -135,30 +132,31 @@ our @id_maps = (
 			1 => 'pers',
 			2 => 'refnum',
 			3 => 'case',
+			4 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'rec' },
 		tokens => [ 'prec' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'ref' },
 		tokens => [ 'pref' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
 		features => { cat => 'pron', type => 'rel' },
 		tokens => [ 'prel' ],
 		submap => [
-			1 => 'num',
-			2 => 'case',
+			1 => 'case',
+			2 => 'num',
 		]
 	},
 	{
@@ -235,6 +233,8 @@ sub tag2structure {
     	# check for extra tag
     	if( $main[0] eq 'part' || $main[0] eq 'inf' ) {
     		push( @tokens, shift @main );
+    	} else {
+    		push( @tokens, undef );
     	}
     	push( @tokens, _parsetags( @main ) ) if @main;
     } elsif ( $cat =~ /^prep/ ) {
@@ -242,8 +242,13 @@ sub tag2structure {
     } elsif ( $cat =~ /^(p[eo])(.*)/ ) {
     	# Last n letters become tokens in their own right
     	@tokens = ( $1, split( '', $2 ) );
-    	# Add on anything that remains
-    	push( @tokens, _parsetags( @main ) ) if @main;
+    	# Add on anything that remains. Different rules for
+    	# pe and po.
+    	if( $tokens[0] eq 'pe' ) {
+    		push( @tokens, [ split( '', $main[0] ) ] ) if @main;
+    	} else {
+			push( @tokens, _parsetags( @main ) ) if @main;
+		}
     } elsif ( @main == 1 ) {
     	push( @tokens, _parsetags( @main ) );
     } elsif ( @main ) {
@@ -261,10 +266,58 @@ sub structure2tag {
     # call generic routine
     my $tag    = $class->SUPER::structure2tag($structure);
     my @tokens = $tag->get_tokens();
+    # make sure we are dealing with arrayrefs in each case
+    map { $_ = [ $_ ] unless ref( $_ ) } @tokens;
 
-	my @tags = ( '' );
+	# Put the tokens back together in our idiosyncratic way
+	my @tag;
+	my $cat = shift @tokens;
+	if( @$cat == 1 ) {
+		$cat = shift @$cat;
+	} # TODO else we need multiple tags.
 	
-	my $tag_string = join( ' ', @tags );
+	# What we do next depends on the category.
+	if( $cat eq 'verb' ) {
+		push( @tag, $cat );
+		my $type = shift @tokens;
+		if( $type->[0] && $type->[0] =~ /^(part|inf)$/ ) {
+			push( @tag, $type->[0] );
+		} else {
+			unshift( @tokens, $type );
+		}
+		if( @tokens ) {
+			push( @tag, _maketags( @tokens ) );
+		}	
+	} elsif( $cat eq 'prep' ) {
+		# Remaining token spot, if any, is case(s) that preposition governs.
+		if( @tokens ) {
+			my @cases = ref( $tokens[0] ) ? @{$tokens[0]} : ( $tokens[0] );
+			$cat .= '+' . join( '', @cases );
+		}
+		push( @tag, $cat );
+	} elsif( $cat eq 'pe' || $cat eq 'po' ) {
+		# First two tags get added to the category
+		my $origcat = $cat;
+		my $pers = shift @tokens;
+		my $refnum = shift @tokens;
+		$cat .= $pers->[0];
+		$cat .= $refnum->[0] if @$refnum;
+		push( @tag, $cat );
+		if( @tokens ) {
+			if( $origcat eq 'pe' ) {
+				# Should be one more token; concatenate it
+				my @cases = @{$tokens[0]};
+				push( @tag, join( '', @cases ) );
+			} else {
+				push( @tag, _maketags( @tokens ) );
+			}
+		}		
+	} else {
+		push( @tag, $cat );
+		push( @tag, _maketags( @tokens ) ) if @tokens;
+	}
+	
+	my $tag_string = join( ' ', @tag );
     return $tag_string;
 }
 
@@ -278,7 +331,7 @@ sub _parsetags {
 		} else {
 			# Initialize fields according to the length of our strings.
 			$attrlen = length( $sort );
-			@fields = ( {} ) x $attrlen;
+			map { push( @fields, {} ) } ( 1 .. $attrlen );
 		}
 		my @bits = split( '', $sort );
 		foreach my $i ( 0 .. $#bits ) {
@@ -287,6 +340,28 @@ sub _parsetags {
 	}
 	my @tags = map { [ keys %$_ ] } @fields;
 	return @tags;
+}
+
+sub _maketags {
+	my( @tokens ) = @_;
+	my @fields;
+	foreach my $t ( @tokens ) {
+		my $attr = {};
+		map { $attr->{$_} = 1 if $_ } @$t;
+		push( @fields, $attr );
+	}
+	# Combine the fields into all possibilities.
+	my @tags = ( '' );
+	foreach my $f ( @fields ) {
+		my @bits = keys %$f;
+		my @currtags = @tags;
+		my @newtags;
+		foreach my $b ( @bits ) {
+			map { push @newtags, $_ . $b } @currtags;
+		}
+		@tags = @newtags;
+	}
+	return join( ';', @tags );
 }
 
 1;
