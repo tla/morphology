@@ -158,7 +158,7 @@ our %value_maps = (
 		'n' => 'inf', 'g' => 'gndv', 'd' => 'gnd', 'u' => 'sup'
 	],
 	voice => [
-		'a' => 'act', 'p' => 'pass'
+		'a' => 'act', 'p' => 'pass', 'd' => 'dep'
 	],
 	gender => [
 		'm' => 'masc', 'f' => 'fem', 'n' => 'neut', 'c' => 'comm'
