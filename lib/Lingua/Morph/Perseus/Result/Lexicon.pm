@@ -14,7 +14,8 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-use Lingua::TagSet::Perseus;
+use Module::Load;
+use TryCatch;
 
 =head1 TABLE: C<Lexicon>
 
@@ -129,7 +130,16 @@ sub morphology {
 	my $struct;
 	if( $str ) {
 		# This will croak if $str is not a valid tag
-		$struct = Lingua::TagSet::Perseus->tag2structure( $str );
+		my $mod = 'Lingua::TagSet::Perseus::'
+			. $self->result_source->schema->language;
+		try {
+			load $mod;
+		} catch {
+			# Use the default
+			$mod = 'Lingua::TagSet::Perseus';
+			load $mod;
+		}
+		$struct = $mod->tag2structure( $str );
 	};
 	return $struct;	
 }

@@ -1,0 +1,327 @@
+adj ap   
+adj ap;lp   
+adj as   
+adj as;ap   
+adj bs   
+adj ds;ls   
+adj gp;dp;bp   
+adj gs;ds;bs   
+adj gs;ds;ls   
+adj gs;ds;ls;ap;lp   
+adj gs;ds;ls;bs;is   
+adj ip   
+adj is   
+adj ls   
+adj np   
+adj ns   
+adj ns;as   
+adj ns;as;ap;lp   
+adj ns;as;ls   
+adj ns;as;ls;ap;lp   
+adv    
+art 1   
+art 2   
+art 3   
+conj    
+intj    
+nacc    
+name ap   
+name as   
+name as;ap   
+name bs   
+name gp;dp;bp   
+name gs;ds;ls   
+name gs;ds;ls;bs   
+name gs;ds;ls;bs;is   
+name is   
+name np   
+name ns;as   
+name ns;as;ap;lp   
+name ns;as;ls   
+noun ap   
+noun ap;lp   
+noun as   
+noun as;ap   
+noun bp   
+noun bs   
+noun ds;ls   
+noun gp;dp;bp   
+noun gs;ds;bs   
+noun gs;ds;ls   
+noun gs;ds;ls;ap;lp   
+noun gs;ds;ls;bs;is   
+noun ip   
+noun is   
+noun ls   
+noun np   
+noun ns;as   
+noun ns;as;ap;lp   
+noun ns;as;ls   
+noun ns;as;ls;ap;lp   
+numc    
+numc ap   
+numc ap;lp   
+numc as   
+numc bs   
+numc ds;ls   
+numc gp;dp;bp   
+numc gs;ds;bs   
+numc gs;ds;ls   
+numc ip   
+numc is   
+numc np   
+numc np;ap   
+numc np;ap;lp   
+numc ns;as   
+numo as   
+numo ds;ls   
+numo gs;ds;ls   
+numo ns;as   
+numo ns;as;ls   
+pdem ap   
+pdem ap;lp   
+pdem as   
+pdem bp   
+pdem bs   
+pdem ds;ls   
+pdem ds;ls;bs   
+pdem gp   
+pdem gp;dp;bp   
+pdem gs   
+pdem ip   
+pdem is   
+pdem lp;ap   
+pdem ls   
+pdem ls;bs   
+pdem np   
+pdem ns;as   
+pe1p a   
+pe1p adl   
+pe1p b   
+pe1p g   
+pe1p n   
+pe1s a   
+pe1s b   
+pe1s d   
+pe1s g   
+pe1s la   
+pe1s n   
+pe2p a   
+pe2p al   
+pe2p b   
+pe2p dal   
+pe2p g   
+pe2p i   
+pe2p n   
+pe2s a   
+pe2s ald   
+pe2s b   
+pe2s g   
+pe2s i   
+pe2s n   
+pide    
+pide ap   
+pide ap;lp   
+pide as   
+pide bs   
+pide ds;ls;bs   
+pide gp;dp;bp   
+pide gs   
+pide gs;ds;ls   
+pide ip   
+pide is   
+pide np   
+pide ns;as   
+pind    
+pind ap   
+pind ap;lp   
+pind as   
+pind bp   
+pind bs   
+pind dp;lp   
+pind ds;ls   
+pind ds;ls;is   
+pind gp;dp;bp   
+pind gs   
+pind ip   
+pind is   
+pind np   
+pind ns;as   
+po1p ap   
+po1p ap;lp   
+po1p as   
+po1p bs   
+po1p ds;ls   
+po1p gp;dp;bp   
+po1p gs   
+po1p ip   
+po1p is   
+po1p np   
+po1p ns;as   
+po1s ap;lp   
+po1s bs   
+po1s ds;ls   
+po1s gp;dp;bp   
+po1s gs   
+po1s ip   
+po1s is   
+po1s np   
+po1s ns;as   
+po2p as   
+po2p bp   
+po2p bs   
+po2p ds;ls   
+po2p gp;dp;bp   
+po2p gs   
+po2p is   
+po2p ns;as   
+po2s as   
+po2s bp   
+po2s bs   
+po2s dp;bp   
+po2s ds;ls   
+po2s gna   
+po2s gp;dp;bp   
+po2s gs   
+po2s is   
+po2s ls   
+po2s na   
+po3 ap   
+po3 as   
+po3p    
+po3s bs   
+po3s ds;ls;lp   
+po3s gp;dp;bp   
+po3s gs   
+po3s ip   
+po3s is   
+po3s ns;as;np;ap   
+prec ap   
+prec ap;lp   
+prec gp;dp;bp   
+prec ip   
+pref ap;lp   
+pref bs   
+pref gp;dp;bp   
+pref gs;ds;ls   
+pref ip   
+pref is   
+prel ap   
+prel ap;lp   
+prel as   
+prel bs   
+prel ds;ls   
+prel gp;dp;bp   
+prel gs   
+prel ip   
+prel is   
+prel lp;ap   
+prel np   
+prel ns;as   
+prel ns;as;np;ap   
+prep+a    
+prep+algbi    
+prep+dl    
+prep+dlb    
+prep+g    
+prep+gdalbi    
+prep+gdbl    
+prep+i    
+prep+lab    
+prep+labg    
+prog ap   
+prog ap;lp   
+prog bs   
+prog ds;ls   
+prog gp;dp   
+prog gp;dp;bp   
+prog gs   
+prog ip   
+prog is   
+prog lp;ap   
+prog np   
+prog ns;as   
+prog ns;as;np;ap   
+verb 1paca;1pacp   
+verb 1paia   
+verb 1paia;1paip   
+verb 1piia;1piip   
+verb 1piip   
+verb 1ppcp   
+verb 1ppia   
+verb 1ppip   
+verb 1saca   
+verb 1sacp   
+verb 1saia   
+verb 1saip   
+verb 1siia;1siip   
+verb 1siip   
+verb 1spia   
+verb 1spip   
+verb 2paca;2pacp   
+verb 2paga   
+verb 2paia   
+verb 2paia;2paga   
+verb 2paip   
+verb 2paip;2pagp   
+verb 2ppca   
+verb 2ppcp   
+verb 2ppia   
+verb 2ppip   
+verb 2saca   
+verb 2saca;2sacp   
+verb 2sacp   
+verb 2saga   
+verb 2sagp   
+verb 2saia   
+verb 2saia;2spga   
+verb 2saip   
+verb 2siia;2siip   
+verb 2spca   
+verb 2spca;2spcp   
+verb 2spcp   
+verb 2spga   
+verb 2spgp   
+verb 2spia   
+verb 2spip   
+verb 3paca   
+verb 3pacp   
+verb 3paia   
+verb 3paip   
+verb 3piia   
+verb 3piia;3piip   
+verb 3ppca   
+verb 3ppcp   
+verb 3ppia   
+verb 3ppia;3ppip   
+verb 3ppip   
+verb 3saca   
+verb 3sacp   
+verb 3saia   
+verb 3saia;2saga   
+verb 3saia;2sagp   
+verb 3saip   
+verb 3siia   
+verb 3siia;3siip   
+verb 3siip   
+verb 3spca   
+verb 3spcp   
+verb 3spia   
+verb 3spia;3spip   
+verb 3spip   
+verb inf as  
+verb inf ds;ls  
+verb inf gs;ds;bs  
+verb inf is  
+verb inf ns;as;ls  
+verb part ap  
+verb part ap;lp  
+verb part as  
+verb part gp;dp;bp  
+verb part gs;ds;bs  
+verb part ip  
+verb part is  
+verb part np  
+verb part ns;as;ls  
+verb part ns;as;ls;ap;lp  
+prep+l   
