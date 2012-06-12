@@ -12,7 +12,6 @@ use TryCatch;
 
 binmode STDOUT, ':utf8';
 binmode STDERR, ':utf8';
-#memoize('ttpos');
 
 # Usage: $0 TOKENS PARSES
 # The arguments are the names of two files produced as follows (from an SQLite
@@ -77,7 +76,7 @@ while( my $row = $csv->getline( \*TOKENS ) ) {
 		# Latin: break off -que suffixes
 		if( $content =~ /^(.*)que$/ && !exists $quewords{lc($content)}) {
 			my $base = $1;
-			push( @curr_run, [ $base, ttpos( $lexcode ) ], [ 'que', 'CC' ] );
+			push( @curr_run, [ $base, ttpos( $lexcode ) ], [ 'que', 'CONJ' ] );
 		} else {
 			push( @curr_run, [ $content, ttpos( $lexcode ) ] );
 		}
@@ -112,6 +111,7 @@ sub ttpos {
 	if( $struct ) {
 		my $tag = Lingua::TagSet::TreeTagger::Latin->structure2tag( $struct );
 		warn "Did not get TT tag from $code" unless $tag;
+		return $tag;
 	} else {
 		warn "Could not parse code $code";
 		return;
