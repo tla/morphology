@@ -228,7 +228,6 @@ sub tag2structure {
     my @main = split( /\s+/, $tag_string );
     my $cat = shift @main;
     my @tokens = ( $cat );
-    $DB::single = 1;
     if( $cat eq 'verb' ) {
     	# check for extra tag
     	if( $main[0] eq 'part' || $main[0] eq 'inf' ) {
